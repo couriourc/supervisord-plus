@@ -1,4 +1,4 @@
-module github.com/ochinchina/supervisord/events
+module github.com/couriourc/supervisord-plus/events
 
 go 1.16
 

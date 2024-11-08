@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/couriourc/supervisord-plus/config"
+	"github.com/couriourc/supervisord-plus/types"
+	"github.com/couriourc/supervisord-plus/xmlrpcclient"
 	"github.com/jessevdk/go-flags"
-	"github.com/ochinchina/supervisord/config"
-	"github.com/ochinchina/supervisord/types"
-	"github.com/ochinchina/supervisord/xmlrpcclient"
 	"net/http"
 	"os"
 	"strings"

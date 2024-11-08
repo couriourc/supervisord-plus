@@ -3,8 +3,8 @@ package logger
 import (
 	"errors"
 	"fmt"
-	"github.com/ochinchina/supervisord/events"
-	"github.com/ochinchina/supervisord/faults"
+	"github.com/couriourc/supervisord-plus/events"
+	"github.com/couriourc/supervisord-plus/faults"
 	"io"
 	"os"
 	"strings"
@@ -664,7 +664,6 @@ func (cl *CompositeLogger) ClearAllLogFile() error {
 }
 
 // NewLogger create a logger for a program with parameters
-//
 func NewLogger(programName string, logFile string, locker sync.Locker, maxBytes int64, backups int, logEventEmitter LogEventEmitter) Logger {
 	files := splitLogFile(logFile)
 	loggers := make([]Logger, 0)

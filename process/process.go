@@ -15,11 +15,11 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/couriourc/supervisord-plus/config"
+	"github.com/couriourc/supervisord-plus/events"
+	"github.com/couriourc/supervisord-plus/logger"
+	"github.com/couriourc/supervisord-plus/signals"
 	"github.com/ochinchina/filechangemonitor"
-	"github.com/ochinchina/supervisord/config"
-	"github.com/ochinchina/supervisord/events"
-	"github.com/ochinchina/supervisord/logger"
-	"github.com/ochinchina/supervisord/signals"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 )
@@ -158,7 +158,8 @@ func (p *Process) SetupArgs(args string) {
 
 // Start start the process
 // Args:
-//  wait - true, wait the program started or failed
+//
+//	wait - true, wait the program started or failed
 func (p *Process) Start(wait bool) {
 	log.WithFields(log.Fields{"program": p.GetName()}).Info("try to start program")
 	p.lock.Lock()
@@ -410,7 +411,6 @@ func (p *Process) getExitCodes() []int {
 }
 
 // check if the process is running or not
-//
 func (p *Process) isRunning() bool {
 	if p.cmd != nil && p.cmd.Process != nil {
 		if runtime.GOOS == "windows" {
@@ -527,7 +527,6 @@ func (p *Process) failToStartProgram(reason string, finishCb func()) {
 }
 
 // monitor if the program is in running before endTime
-//
 func (p *Process) monitorProgramIsRunning(endTime time.Time, monitorExited *int32, programExited *int32) {
 	// if time is not expired
 	for time.Now().Before(endTime) && atomic.LoadInt32(programExited) == 0 {
@@ -682,9 +681,9 @@ func (p *Process) changeStateTo(procState State) {
 // Signal send signal to the process
 //
 // Args:
-//   sig - the signal to the process
-//   sigChildren - true: send the signal to the process and its children proess
 //
+//	sig - the signal to the process
+//	sigChildren - true: send the signal to the process and its children proess
 func (p *Process) Signal(sig os.Signal, sigChildren bool) error {
 	p.lock.RLock()
 	defer p.lock.RUnlock()
@@ -709,9 +708,9 @@ func (p *Process) sendSignals(sigs []string, sigChildren bool) {
 // send signal to the process
 //
 // Args:
-//    sig - the signal to be sent
-//    sigChildren - true if the signal also need to be sent to children process
 //
+//	sig - the signal to be sent
+//	sigChildren - true if the signal also need to be sent to children process
 func (p *Process) sendSignal(sig os.Signal, sigChildren bool) error {
 	if p.cmd != nil && p.cmd.Process != nil {
 		log.WithFields(log.Fields{"program": p.GetName(), "signal": sig}).Info("Send signal to program")
@@ -878,7 +877,7 @@ func (p *Process) setUser() error {
 	return nil
 }
 
-//Stop send signal to process to stop it
+// Stop send signal to process to stop it
 func (p *Process) Stop(wait bool) {
 	p.lock.Lock()
 	p.stopByUser = true

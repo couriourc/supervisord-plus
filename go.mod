@@ -1,8 +1,17 @@
-module github.com/ochinchina/supervisord
+module github.com/couriourc/supervisord-plus
 
 go 1.16
 
 require (
+	github.com/couriourc/supervisord-plus/config v0.0.0-20210503132557-74b0760cc12e
+	github.com/couriourc/supervisord-plus/events v0.0.0-20210503132557-74b0760cc12e
+	github.com/couriourc/supervisord-plus/faults v0.0.0-20210503132557-74b0760cc12e
+	github.com/couriourc/supervisord-plus/logger v0.0.0-20210503132557-74b0760cc12e
+	github.com/couriourc/supervisord-plus/process v0.0.0-20210503132557-74b0760cc12e
+	github.com/couriourc/supervisord-plus/signals v0.0.0-20210503132557-74b0760cc12e
+	github.com/couriourc/supervisord-plus/types v0.0.0-20210503132557-74b0760cc12e
+	github.com/couriourc/supervisord-plus/util v0.0.0-20230902082938-c2cae38b7454
+	github.com/couriourc/supervisord-plus/xmlrpcclient v0.0.0-20210503132557-74b0760cc12e
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/rpc v1.2.0
@@ -13,15 +22,6 @@ require (
 	github.com/ochinchina/go-ini v1.0.1
 	github.com/ochinchina/go-reaper v0.0.0-20181016012355-6b11389e79fc
 	github.com/ochinchina/gorilla-xmlrpc v0.0.0-20171012055324-ecf2fe693a2c
-	github.com/ochinchina/supervisord/config v0.0.0-20210503132557-74b0760cc12e
-	github.com/ochinchina/supervisord/events v0.0.0-20210503132557-74b0760cc12e
-	github.com/ochinchina/supervisord/faults v0.0.0-20210503132557-74b0760cc12e
-	github.com/ochinchina/supervisord/logger v0.0.0-20210503132557-74b0760cc12e
-	github.com/ochinchina/supervisord/process v0.0.0-20210503132557-74b0760cc12e
-	github.com/ochinchina/supervisord/signals v0.0.0-20210503132557-74b0760cc12e
-	github.com/ochinchina/supervisord/types v0.0.0-20210503132557-74b0760cc12e
-	github.com/ochinchina/supervisord/util v0.0.0-20230902082938-c2cae38b7454
-	github.com/ochinchina/supervisord/xmlrpcclient v0.0.0-20210503132557-74b0760cc12e
 	github.com/prometheus/client_golang v1.10.0
 	github.com/prometheus/common v0.23.0 // indirect
 	github.com/rs/cors v1.11.1
@@ -30,13 +30,13 @@ require (
 )
 
 replace (
-	github.com/ochinchina/supervisord/config => ./config
-	github.com/ochinchina/supervisord/events => ./events
-	github.com/ochinchina/supervisord/faults => ./faults
-	github.com/ochinchina/supervisord/logger => ./logger
-	github.com/ochinchina/supervisord/process => ./process
-	github.com/ochinchina/supervisord/signals => ./signals
-	github.com/ochinchina/supervisord/types => ./types
-	github.com/ochinchina/supervisord/util => ./util
-	github.com/ochinchina/supervisord/xmlrpcclient => ./xmlrpcclient
+	github.com/couriourc/supervisord-plus/config => ./config
+	github.com/couriourc/supervisord-plus/events => ./events
+	github.com/couriourc/supervisord-plus/faults => ./faults
+	github.com/couriourc/supervisord-plus/logger => ./logger
+	github.com/couriourc/supervisord-plus/process => ./process
+	github.com/couriourc/supervisord-plus/signals => ./signals
+	github.com/couriourc/supervisord-plus/types => ./types
+	github.com/couriourc/supervisord-plus/util => ./util
+	github.com/couriourc/supervisord-plus/xmlrpcclient => ./xmlrpcclient
 )

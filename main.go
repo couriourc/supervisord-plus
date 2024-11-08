@@ -3,10 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/couriourc/supervisord-plus/config"
+	"github.com/couriourc/supervisord-plus/logger"
 	"github.com/jessevdk/go-flags"
 	ini "github.com/ochinchina/go-ini"
-	"github.com/ochinchina/supervisord/config"
-	"github.com/ochinchina/supervisord/logger"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"os/signal"

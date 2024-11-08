@@ -1,4 +1,4 @@
-module github.com/ochinchina/supervisord/process
+module github.com/couriourc/supervisord-plus/process
 
 go 1.16
 
