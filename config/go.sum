@@ -2,8 +2,6 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/ochinchina/go-ini v1.0.1 h1:qrKGrgxJjY+4H8aV7B2HPohShzHGrymW+/X1Gx933zU=
 github.com/ochinchina/go-ini v1.0.1/go.mod h1:Tqs5+JmccLSNMX1KXbbyG/B3ro4J9uXVYC5U5VOeRE8=
-github.com/ochinchina/supervisord/util v0.0.0-20230902082938-c2cae38b7454 h1:RDDrvgc/1EVvnHrrD5WdokME8GqrQ3eFK6OEy/luiC0=
-github.com/ochinchina/supervisord/util v0.0.0-20230902082938-c2cae38b7454/go.mod h1:V/yb0hfd2ax3Pzn83yoxBxww4HLJ5AXYH+rQBCieqcU=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/sirupsen/logrus v1.8.1 h1:dJKuHgqk1NNQlqoA6BTlM1Wf9DOH3NBjQyu0h9+AZZE=
