@@ -3,15 +3,15 @@ module github.com/couriourc/supervisord-plus
 go 1.16
 
 require (
-	github.com/couriourc/supervisord-plus/config v0.0.0-20210503132557-74b0760cc12e
-	github.com/couriourc/supervisord-plus/events v0.0.0-20210503132557-74b0760cc12e
-	github.com/couriourc/supervisord-plus/faults v0.0.0-20210503132557-74b0760cc12e
-	github.com/couriourc/supervisord-plus/logger v0.0.0-20210503132557-74b0760cc12e
-	github.com/couriourc/supervisord-plus/process v0.0.0-20210503132557-74b0760cc12e
-	github.com/couriourc/supervisord-plus/signals v0.0.0-20210503132557-74b0760cc12e
-	github.com/couriourc/supervisord-plus/types v0.0.0-20210503132557-74b0760cc12e
+	github.com/couriourc/supervisord-plus/config v0.0.0-00010101000000-000000000000
+	github.com/couriourc/supervisord-plus/events v0.0.0-00010101000000-000000000000
+	github.com/couriourc/supervisord-plus/faults v0.0.0-00010101000000-000000000000
+	github.com/couriourc/supervisord-plus/logger v0.0.0-00010101000000-000000000000
+	github.com/couriourc/supervisord-plus/process v0.0.0-00010101000000-000000000000
+	github.com/couriourc/supervisord-plus/signals v0.0.0-00010101000000-000000000000
+	github.com/couriourc/supervisord-plus/types v0.0.0-00010101000000-000000000000
 	github.com/couriourc/supervisord-plus/util v0.0.0-20230902082938-c2cae38b7454
-	github.com/couriourc/supervisord-plus/xmlrpcclient v0.0.0-20210503132557-74b0760cc12e
+	github.com/couriourc/supervisord-plus/xmlrpcclient v0.0.0-00010101000000-000000000000
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/rpc v1.2.0
