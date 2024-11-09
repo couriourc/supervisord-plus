@@ -163,14 +163,24 @@ func (p *Process) SetupArgs(args string) {
 func (p *Process) Start(wait bool) {
 	log.WithFields(log.Fields{"program": p.GetName()}).Info("try to start program")
 	p.lock.Lock()
-	if p.inStart {
-		log.WithFields(log.Fields{"program": p.GetName()}).Info("Don't start program again, program is already started")
+
+	// check if the program is in running state
+	// before start,it should be shutdown
+	if p.isRunning() {
 		p.lock.Unlock()
+		p.Stop(true)
+		p.lock.Lock()
+	}
+	if p.inStart {
+		// and it does
+		//log.WithFields(log.Fields{"program": p.GetName()}).Info("Don't start program again, program is already started")
+		//p.lock.Unlock()
 		return
 	}
 
 	p.inStart = true
 	p.stopByUser = false
+
 	p.lock.Unlock()
 
 	var runCond *sync.Cond
@@ -180,7 +190,6 @@ func (p *Process) Start(wait bool) {
 	}
 
 	go func() {
-
 		for {
 			p.run(func() {
 				if wait {
@@ -202,9 +211,6 @@ func (p *Process) Start(wait bool) {
 				break
 			}
 		}
-		p.lock.Lock()
-		p.inStart = false
-		p.lock.Unlock()
 	}()
 
 	if wait {
@@ -547,13 +553,6 @@ func (p *Process) run(finishCb func()) {
 	p.lock.Lock()
 	defer p.lock.Unlock()
 
-	// check if the program is in running state
-	if p.isRunning() {
-		log.WithFields(log.Fields{"program": p.GetName()}).Info("Don't start program because it is running")
-		finishCb()
-		return
-
-	}
 	p.startTime = time.Now()
 	atomic.StoreInt32(p.retryTimes, 0)
 	startSecs := p.getStartSeconds()
@@ -882,20 +881,21 @@ func (p *Process) Stop(wait bool) {
 	p.lock.Lock()
 	p.stopByUser = true
 	isRunning := p.isRunning()
-	p.lock.Unlock()
+	p.inStart = false
 	if !isRunning {
-		log.WithFields(log.Fields{"program": p.GetName()}).Info("program is not running")
+		//log.WithFields(log.Fields{"program": p.GetName()}).Info("program is not running")
 		return
 	}
 	log.WithFields(log.Fields{"program": p.GetName()}).Info("stop the program")
-	sigs := strings.Fields(p.config.GetString("stopsignal", ""))
-	waitsecs := time.Duration(p.config.GetInt("stopwaitsecs", 10)) * time.Second
+	sigs := strings.Fields(p.config.GetString("stopsignal", "0"))
+	waitsecs := time.Duration(p.config.GetInt("stopwaitsecs", 5)) * time.Second
 	stopasgroup := p.config.GetBool("stopasgroup", false)
 	killasgroup := p.config.GetBool("killasgroup", stopasgroup)
 	if stopasgroup && !killasgroup {
 		log.WithFields(log.Fields{"program": p.GetName()}).Error("Cannot set stopasgroup=true and killasgroup=false")
 	}
 
+	p.lock.Unlock()
 	var stopped int32 = 0
 	go func() {
 		for i := 0; i < len(sigs) && atomic.LoadInt32(&stopped) == 0; i++ {
@@ -922,9 +922,12 @@ func (p *Process) Stop(wait bool) {
 			p.Signal(syscall.SIGKILL, killasgroup)
 			atomic.StoreInt32(&stopped, 1)
 		}
+		p.lock.Lock()
+		p.lock.Unlock()
 	}()
 	if wait {
 		for atomic.LoadInt32(&stopped) == 0 {
+			fmt.Println(atomic.LoadInt32(&stopped))
 			time.Sleep(1 * time.Second)
 		}
 	}

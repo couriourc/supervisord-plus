@@ -4,6 +4,12 @@ import (
 	"fmt"
 )
 
+// SupervisordConfigInfo the supervisord config info
+type SupervisordConfigInfo struct {
+	Filename string `xml:"filename" json:"filename"`
+	Content  string `xml:"content" json:"content"`
+}
+
 // ProcessInfo the running process information
 type ProcessInfo struct {
 	Name          string `xml:"name" json:"name"`

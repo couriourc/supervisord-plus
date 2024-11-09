@@ -5,7 +5,6 @@ import (
 	"github.com/couriourc/supervisord-plus/types"
 	"github.com/gorilla/mux"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -33,9 +32,26 @@ func (sr *SupervisorRestful) CreateProgramHandler() http.Handler {
 
 // CreateSupervisorHandler create http rest interface to control supervisor itself
 func (sr *SupervisorRestful) CreateSupervisorHandler() http.Handler {
+	sr.router.HandleFunc("/supervisor/config", sr.GetConfig).Methods("GET")
 	sr.router.HandleFunc("/supervisor/shutdown", sr.Shutdown).Methods("PUT", "POST")
 	sr.router.HandleFunc("/supervisor/reload", sr.Reload).Methods("PUT", "POST")
 	return sr.router
+}
+func (sr *SupervisorRestful) GetConfig(w http.ResponseWriter, req *http.Request) {
+
+	filename, content, err := sr.supervisor.config.GetConfigFileContent()
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte("BadGateWay"))
+		return
+	}
+	result := types.SupervisordConfigInfo{
+		Filename: filename,
+		Content:  string(content),
+	}
+	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(result)
+	return
 }
 
 // ListProgram list the status of all the programs
@@ -64,8 +80,6 @@ func (sr *SupervisorRestful) StartProgram(w http.ResponseWriter, req *http.Reque
 	params := mux.Vars(req)
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		//return
-		log.Printf(err.Error())
 		body = StartProgramBody{Args: ""}
 	}
 	//log.Printf(body.Args)

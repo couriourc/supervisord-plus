@@ -117,7 +117,6 @@ func (c *Config) createEntry(name string, configDir string) *Entry {
 	return entry
 }
 
-//
 // Load load the configuration and return the loaded programs
 func (c *Config) Load() ([]string, error) {
 	myini := ini.NewIni()
@@ -132,7 +131,13 @@ func (c *Config) Load() ([]string, error) {
 	}
 	return c.parse(myini), nil
 }
-
+func (c *Config) GetConfigFileContent() (string, []byte, error) {
+	content, err := os.ReadFile(c.configFile)
+	if err != nil {
+		return c.configFile, make([]byte, 0), err
+	}
+	return c.configFile, content, nil
+}
 func (c *Config) getIncludeFiles(cfg *ini.Ini) []string {
 	result := make([]string, 0)
 	if includeSection, err := cfg.GetSection("include"); err == nil {
@@ -379,7 +384,8 @@ func parseEnv(s string) *map[string]string {
 }
 
 // GetEnv get the value of key as environment setting. An environment string example:
-//  environment = A="env 1",B="this is a test"
+//
+//	environment = A="env 1",B="this is a test"
 func (c *Entry) GetEnv(key string) []string {
 	value, ok := c.keyValues[key]
 	result := make([]string, 0)
@@ -463,7 +469,6 @@ func (c *Entry) GetStringArray(key string, sep string) []string {
 //	logSize=1GB
 //	logSize=1KB
 //	logSize=1024
-//
 func (c *Entry) GetBytes(key string, defValue int) int {
 	v, ok := c.keyValues[key]
 

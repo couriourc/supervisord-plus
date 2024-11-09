@@ -8,3 +8,10 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sirupsen/logrus v1.8.1
 )
+
+replace (
+	github.com/couriourc/supervisord-plus/config => ../config
+	github.com/couriourc/supervisord-plus/events => ../events
+	github.com/couriourc/supervisord-plus/logger => ../logger
+	github.com/couriourc/supervisord-plus/signals => ../signals
+)
