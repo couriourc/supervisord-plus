@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/couriourc/supervisord-plus/config"
+	"github.com/couriourc/supervisord-plus/process"
 	"github.com/couriourc/supervisord-plus/types"
 	"github.com/gorilla/mux"
 	"io/ioutil"
@@ -33,9 +35,38 @@ func (sr *SupervisorRestful) CreateProgramHandler() http.Handler {
 // CreateSupervisorHandler create http rest interface to control supervisor itself
 func (sr *SupervisorRestful) CreateSupervisorHandler() http.Handler {
 	sr.router.HandleFunc("/supervisor/config", sr.GetConfig).Methods("GET")
+	sr.router.HandleFunc("/supervisor/config", sr.PostConfig).Methods("POST")
+	sr.router.HandleFunc("/supervisor/summary", sr.GetSummary).Methods("GET")
 	sr.router.HandleFunc("/supervisor/shutdown", sr.Shutdown).Methods("PUT", "POST")
 	sr.router.HandleFunc("/supervisor/reload", sr.Reload).Methods("PUT", "POST")
 	return sr.router
+}
+func (sr *SupervisorRestful) PostConfig(w http.ResponseWriter, req *http.Request) {
+
+	tmpConfig := config.NewConfig("")
+	body := make([]byte, req.ContentLength)
+	req.Body.Read(body)
+	if tmpConfig.CheckCanBeParse(body) {
+		err := sr.supervisor.config.OverwriteConfigFile(body)
+		if err != nil {
+			w.WriteHeader(400)
+			json.NewEncoder(w).Encode(struct {
+				Error error `json:"error"`
+			}{
+				Error: err,
+			})
+			return
+		}
+		sr.GetConfig(w, req)
+	} else {
+		w.WriteHeader(400)
+
+		json.NewEncoder(w).Encode(struct {
+			Error string `json:"error"`
+		}{
+			Error: "invalid config",
+		})
+	}
 }
 func (sr *SupervisorRestful) GetConfig(w http.ResponseWriter, req *http.Request) {
 
@@ -52,6 +83,16 @@ func (sr *SupervisorRestful) GetConfig(w http.ResponseWriter, req *http.Request)
 	w.WriteHeader(200)
 	json.NewEncoder(w).Encode(result)
 	return
+}
+func (sr *SupervisorRestful) GetSummary(w http.ResponseWriter, req *http.Request) {
+	result := types.SupervisordSummaryInfo{}
+
+	sr.supervisor.procMgr.ForEachProcess(func(p *process.Process) {
+		result.ProcessStatus = append(result.ProcessStatus, getProcessInfo(p).State)
+	})
+
+	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(result)
 }
 
 // ListProgram list the status of all the programs

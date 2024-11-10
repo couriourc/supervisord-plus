@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -131,12 +132,38 @@ func (c *Config) Load() ([]string, error) {
 	}
 	return c.parse(myini), nil
 }
+func (c *Config) CheckCanBeParse(content []byte) bool {
+	myini := ini.NewIni()
+	myini.LoadBytes(content)
+	parsed := c.parse(myini)
+	if len(parsed) == 0 {
+		return false
+	}
+	return true
+}
 func (c *Config) GetConfigFileContent() (string, []byte, error) {
 	content, err := os.ReadFile(c.configFile)
 	if err != nil {
 		return c.configFile, make([]byte, 0), err
 	}
 	return c.configFile, content, nil
+}
+func writeToFile(fileName string, content []byte) error {
+	f, err := os.OpenFile(fileName, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
+	if err != nil {
+		fmt.Println("file create failed. err: " + err.Error())
+	} else {
+		// offset
+		//os.Truncate(filename, 0) //clear
+		n, _ := f.Seek(0, io.SeekEnd)
+		_, err = f.WriteAt(content, n)
+		fmt.Println("write succeed!")
+		defer f.Close()
+	}
+	return err
+}
+func (c *Config) OverwriteConfigFile(content []byte) error {
+	return writeToFile(c.configFile, content)
 }
 func (c *Config) getIncludeFiles(cfg *ini.Ini) []string {
 	result := make([]string, 0)

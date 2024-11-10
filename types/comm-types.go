@@ -9,6 +9,9 @@ type SupervisordConfigInfo struct {
 	Filename string `xml:"filename" json:"filename"`
 	Content  string `xml:"content" json:"content"`
 }
+type SupervisordSummaryInfo struct {
+	ProcessStatus []int `xml:"process_status" json:"process_status"`
+}
 
 // ProcessInfo the running process information
 type ProcessInfo struct {
