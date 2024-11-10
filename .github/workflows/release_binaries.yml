@@ -5,8 +5,7 @@ on:
   push:
     tags:
       - '*'
-    branch:
-      - master
+    branches: [ "master" ]
 jobs:
 
   goreleaser:
