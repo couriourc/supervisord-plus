@@ -41,7 +41,7 @@ jobs:
           # either 'goreleaser' (default) or 'goreleaser-pro'
           distribution: goreleaser
           # 'latest', 'nightly', or a semver
-          version: latest
+          version: 2.x
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
