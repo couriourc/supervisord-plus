@@ -20,6 +20,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-extldflags -static" -o /usr/
 
 FROM scratch
 
-COPY --from=builder /usr/local/bin/supervisord /usr/local/bin/supervisord
+COPY --from=builder /usr/local/bin/supervisord-plus /usr/local/bin/supervisord-plus
 
-ENTRYPOINT ["/usr/local/bin/supervisord"]
+ENTRYPOINT ["/usr/local/bin/supervisord-plus"]
