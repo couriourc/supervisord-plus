@@ -123,7 +123,7 @@ func findSupervisordConf() (string, error) {
 func runServer() {
 	// infinite loop for handling Restart ('reload' command)
 	loadEnvFile()
-	for true {
+	for {
 		if len(options.Configuration) <= 0 {
 			options.Configuration, _ = findSupervisordConf()
 		}

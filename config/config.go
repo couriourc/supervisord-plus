@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"github.com/couriourc/supervisord-plus/updater"
 	"io"
 	"io/ioutil"
 	"os"
@@ -25,39 +26,52 @@ type Entry struct {
 
 // IsProgram return true if this is a program section
 func (c *Entry) IsProgram() bool {
-	return strings.HasPrefix(c.Name, "program:")
+	return strings.HasPrefix(c.Name, ProgramNamespace)
 }
 
 // GetProgramName get the program name
 func (c *Entry) GetProgramName() string {
-	if strings.HasPrefix(c.Name, "program:") {
-		return c.Name[len("program:"):]
+	if strings.HasPrefix(c.Name, ProgramNamespace) {
+		return c.Name[len(ProgramNamespace):]
 	}
 	return ""
 }
 
 // IsEventListener return true if this section is for event listener
 func (c *Entry) IsEventListener() bool {
-	return strings.HasPrefix(c.Name, "eventlistener:")
+	return IsEventListener(c.Name)
+}
+
+// IsUpdater return true if this section is for updater
+func (c *Entry) IsUpdater() bool {
+	return strings.HasPrefix(c.Name, UpdaterNamespace)
 }
 
 // GetEventListenerName get the event listener name
 func (c *Entry) GetEventListenerName() string {
-	if strings.HasPrefix(c.Name, "eventlistener:") {
-		return c.Name[len("eventlistener:"):]
+	if IsEventListener(c.Name) {
+		return c.Name[len(EventListenerNamespace):]
 	}
 	return ""
 }
 
 // IsGroup return true if it is group section
 func (c *Entry) IsGroup() bool {
-	return strings.HasPrefix(c.Name, "group:")
+	return IsGroup(c.Name)
 }
 
 // GetGroupName get the group name if this entry is group
 func (c *Entry) GetGroupName() string {
-	if strings.HasPrefix(c.Name, "group:") {
-		return c.Name[len("group:"):]
+	if IsGroup(c.Name) {
+		return c.Name[len(GroupNamespace):]
+	}
+	return ""
+}
+
+// GetUpdaterName get the updater name if this entry is updater
+func (c *Entry) GetUpdaterName() string {
+	if IsUpdater(c.Name) {
+		return c.Name[len(UpdaterNamespace):]
 	}
 	return ""
 }
@@ -203,11 +217,15 @@ func (c *Config) getIncludeFiles(cfg *ini.Ini) []string {
 func (c *Config) parse(cfg *ini.Ini) []string {
 	c.setProgramDefaultParams(cfg)
 	c.parseGroup(cfg)
+	c.parseUpdater(cfg)
+
 	loadedPrograms := c.parseProgram(cfg)
 
 	// parse non-group,non-program and non-eventlistener sections
 	for _, section := range cfg.Sections() {
-		if !strings.HasPrefix(section.Name, "group:") && !strings.HasPrefix(section.Name, "program:") && !strings.HasPrefix(section.Name, "eventlistener:") {
+		if !IsGroup(section.Name) &&
+			!IsProgram(section.Name) &&
+			!IsEventListener(section.Name) {
 			entry := c.createEntry(section.Name, c.GetConfigFileDir())
 			c.entries[section.Name] = entry
 			entry.parse(section)
@@ -221,7 +239,7 @@ func (c *Config) setProgramDefaultParams(cfg *ini.Ini) {
 	program_default_section, err := cfg.GetSection("program-default")
 	if err == nil {
 		for _, section := range cfg.Sections() {
-			if section.Name == "program-default" || !strings.HasPrefix(section.Name, "program:") {
+			if section.Name == "program-default" || !IsProgram(section.Name) {
 				continue
 			}
 			for _, key := range program_default_section.Keys() {
@@ -304,10 +322,19 @@ func (c *Config) GetPrograms() []*Entry {
 // GetEventListeners get event listeners
 func (c *Config) GetEventListeners() []*Entry {
 	eventListeners := c.GetEntries(func(entry *Entry) bool {
-		return entry.IsEventListener()
+		return IsEventListener(entry.Name)
 	})
 
 	return eventListeners
+}
+
+// GetUpdater get updaters
+func (c *Config) GetUpdater() []*Entry {
+	updater := c.GetEntries(func(entry *Entry) bool {
+		return IsUpdater(entry.Name)
+	})
+
+	return updater
 }
 
 // GetProgramNames get all the program names
@@ -526,7 +553,7 @@ func (c *Config) parseGroup(cfg *ini.Ini) {
 
 	// parse the group at first
 	for _, section := range cfg.Sections() {
-		if strings.HasPrefix(section.Name, "group:") {
+		if IsGroup(section.Name) {
 			entry := c.createEntry(section.Name, c.GetConfigFileDir())
 			entry.parse(section)
 			groupName := entry.GetGroupName()
@@ -537,21 +564,49 @@ func (c *Config) parseGroup(cfg *ini.Ini) {
 		}
 	}
 }
+func (c *Config) parseUpdater(cfg *ini.Ini) {
+	// parse the group at first
+	for _, section := range cfg.Sections() {
+		if !IsUpdater(section.Name) {
+			continue
+		}
+		//entry := c.createEntry(section.Name, c.GetConfigFileDir())
+		//entry.parse(section)
+		//updateName := entry.GetUpdaterName()
+		for _, section := range cfg.Sections() {
+			if !IsUpdater(section.Name) {
+				continue
+			}
+			var params = make(map[string]string)
+			params["version"] = section.GetValueWithDefault("version", "")
+			params["api_url"] = section.GetValueWithDefault("api_url", "")
+			params["bin_url"] = section.GetValueWithDefault("bin_url", "")
+			params["diff_url"] = section.GetValueWithDefault("diff_url", "")
+			params["dir"] = section.GetValueWithDefault("dir", "")
+			params["cmd_name"] = section.GetValueWithDefault("cmd_name", "")
+			params["force_check"] = section.GetValueWithDefault("force_check", "false")
+			params["agent_name"] = section.GetValueWithDefault("agent_name", "agent_name")
+
+			updater.NewUpdater(params)
+		}
+	}
+
+}
 
 func (c *Config) isProgramOrEventListener(section *ini.Section) (bool, string) {
 	// check if it is a program or event listener section
-	isProgram := strings.HasPrefix(section.Name, "program:")
-	isEventListener := strings.HasPrefix(section.Name, "eventlistener:")
+	isProgram := IsProgram(section.Name)
+	isEventListener := IsEventListener(section.Name)
 	prefix := ""
 	if isProgram {
-		prefix = "program:"
+		prefix = ProgramNamespace
 	} else if isEventListener {
-		prefix = "eventlistener:"
+		prefix = EventListenerNamespace
 	}
 	return isProgram || isEventListener, prefix
 }
 
-// parse the sections starts with "program:" prefix.
+// parse the sections starts with ProgramNamespace prefix.
 //
 // Return all the parsed program names in the ini
 func (c *Config) parseProgram(cfg *ini.Ini) []string {
@@ -560,69 +615,70 @@ func (c *Config) parseProgram(cfg *ini.Ini) []string {
 		programOrEventListener, prefix := c.isProgramOrEventListener(section)
 
 		// if it is program or event listener
-		if programOrEventListener {
-			// get the number of processes
-			numProcs, err := section.GetInt("numprocs")
-			programName := section.Name[len(prefix):]
-			if err != nil {
-				numProcs = 1
+		if !programOrEventListener {
+			continue
+		}
+		// get the number of processes
+		numProcs, err := section.GetInt("numprocs")
+		programName := section.Name[len(prefix):]
+		if err != nil {
+			numProcs = 1
+		}
+		procName, err := section.GetValue("process_name")
+		if numProcs > 1 {
+			if err != nil || strings.Index(procName, "%(process_num)") == -1 {
+				log.WithFields(log.Fields{
+					"numprocs":     numProcs,
+					"process_name": procName,
+				}).Error("no process_num in process name")
 			}
-			procName, err := section.GetValue("process_name")
-			if numProcs > 1 {
-				if err != nil || strings.Index(procName, "%(process_num)") == -1 {
-					log.WithFields(log.Fields{
-						"numprocs":     numProcs,
-						"process_name": procName,
-					}).Error("no process_num in process name")
-				}
-			}
-			originalProcName := programName
+		}
+		originalProcName := programName
+		if err == nil {
+			originalProcName = procName
+		}
+
+		originalCmd := section.GetValueWithDefault("command", "")
+
+		for i := 1; i <= numProcs; i++ {
+			envs := NewStringExpression("program_name", programName,
+				"process_num", fmt.Sprintf("%d", i),
+				"group_name", c.ProgramGroup.GetGroup(programName, programName),
+				"here", c.GetConfigFileDir())
+			envValue, err := section.GetValue("environment")
 			if err == nil {
-				originalProcName = procName
+				for k, v := range *parseEnv(envValue) {
+					envs.Add(fmt.Sprintf("ENV_%s", k), v)
+				}
+			}
+			cmd, err := envs.Eval(originalCmd)
+			if err != nil {
+				log.WithFields(log.Fields{
+					log.ErrorKey: err,
+					"program":    programName,
+				}).Error("get envs failed")
+				continue
+			}
+			section.Add("command", cmd)
+
+			procName, err := envs.Eval(originalProcName)
+			if err != nil {
+				log.WithFields(log.Fields{
+					log.ErrorKey: err,
+					"program":    programName,
+				}).Error("get envs failed")
+				continue
 			}
 
-			originalCmd := section.GetValueWithDefault("command", "")
-
-			for i := 1; i <= numProcs; i++ {
-				envs := NewStringExpression("program_name", programName,
-					"process_num", fmt.Sprintf("%d", i),
-					"group_name", c.ProgramGroup.GetGroup(programName, programName),
-					"here", c.GetConfigFileDir())
-				envValue, err := section.GetValue("environment")
-				if err == nil {
-					for k, v := range *parseEnv(envValue) {
-						envs.Add(fmt.Sprintf("ENV_%s", k), v)
-					}
-				}
-				cmd, err := envs.Eval(originalCmd)
-				if err != nil {
-					log.WithFields(log.Fields{
-						log.ErrorKey: err,
-						"program":    programName,
-					}).Error("get envs failed")
-					continue
-				}
-				section.Add("command", cmd)
-
-				procName, err := envs.Eval(originalProcName)
-				if err != nil {
-					log.WithFields(log.Fields{
-						log.ErrorKey: err,
-						"program":    programName,
-					}).Error("get envs failed")
-					continue
-				}
-
-				section.Add("process_name", procName)
-				section.Add("numprocs_start", fmt.Sprintf("%d", (i-1)))
-				section.Add("process_num", fmt.Sprintf("%d", i))
-				entry := c.createEntry(procName, c.GetConfigFileDir())
-				entry.parse(section)
-				entry.Name = prefix + procName
-				group := c.ProgramGroup.GetGroup(programName, programName)
-				entry.Group = group
-				loadedPrograms = append(loadedPrograms, procName)
-			}
+			section.Add("process_name", procName)
+			section.Add("numprocs_start", fmt.Sprintf("%d", (i-1)))
+			section.Add("process_num", fmt.Sprintf("%d", i))
+			entry := c.createEntry(procName, c.GetConfigFileDir())
+			entry.parse(section)
+			entry.Name = prefix + procName
+			group := c.ProgramGroup.GetGroup(programName, programName)
+			entry.Group = group
+			loadedPrograms = append(loadedPrograms, procName)
 		}
 	}
 	return loadedPrograms

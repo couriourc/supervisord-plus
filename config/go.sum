@@ -1,9 +1,13 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/kr/binarydist v0.1.0 h1:6kAoLA9FMMnNGSehX0s1PdjbEaACznAv/W219j2uvyo=
+github.com/kr/binarydist v0.1.0/go.mod h1:DY7S//GCoz1BCd0B0EVrinCKAZN3pXe+MDaIZbXQVgM=
 github.com/ochinchina/go-ini v1.0.1 h1:qrKGrgxJjY+4H8aV7B2HPohShzHGrymW+/X1Gx933zU=
 github.com/ochinchina/go-ini v1.0.1/go.mod h1:Tqs5+JmccLSNMX1KXbbyG/B3ro4J9uXVYC5U5VOeRE8=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/sanbornm/go-selfupdate v0.0.0-20230714125711-e1c03e3d6ac7 h1:gm8c4AGd1rHqUsWJQHCjJlAg7yEcgzwyHhWbspPk9HI=
+github.com/sanbornm/go-selfupdate v0.0.0-20230714125711-e1c03e3d6ac7/go.mod h1:aCbVFjQ5FBm4o5D/JVxc8AtWfGgDYnDXgySPJf91ozU=
 github.com/sirupsen/logrus v1.8.1 h1:dJKuHgqk1NNQlqoA6BTlM1Wf9DOH3NBjQyu0h9+AZZE=
 github.com/sirupsen/logrus v1.8.1/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
 github.com/stretchr/testify v1.2.2 h1:bSDNvY7ZPG5RlJ8otE/7V6gMiyenm9RtJ7IUVIAoJ1w=

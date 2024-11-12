@@ -5,6 +5,7 @@ import (
 	"github.com/couriourc/supervisord-plus/config"
 	"github.com/couriourc/supervisord-plus/process"
 	"github.com/couriourc/supervisord-plus/types"
+	"github.com/couriourc/supervisord-plus/updater"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
@@ -29,6 +30,12 @@ func (sr *SupervisorRestful) CreateProgramHandler() http.Handler {
 	sr.router.HandleFunc("/program/log/{name}/stdout", sr.ReadStdoutLog).Methods("GET")
 	sr.router.HandleFunc("/program/startPrograms", sr.StartPrograms).Methods("POST", "PUT")
 	sr.router.HandleFunc("/program/stopPrograms", sr.StopPrograms).Methods("POST", "PUT")
+	return sr.router
+}
+
+func (sr *SupervisorRestful) CreateUpdaterHandler() http.Handler {
+	sr.router.HandleFunc("/updater/{agent_name}", updater.PostTriggerUpdater).Methods("PUT", "POST")
+	sr.router.HandleFunc("/updater/list", updater.GetAllUpdaterInfo).Methods("GET")
 	return sr.router
 }
 
@@ -201,6 +208,13 @@ func (sr *SupervisorRestful) StopPrograms(w http.ResponseWriter, req *http.Reque
 		w.Write([]byte("Success to stop the programs"))
 	}
 
+}
+
+// TriggerUpdater trigger updater for agent_name
+func (sr *SupervisorRestful) TriggerUpdater(w http.ResponseWriter, req *http.Request) {
+	params := mux.Vars(req)
+	updater.TriggerUpdater(params["agent_name"])
+	w.Write([]byte("Success to Trigger updater"))
 }
 
 // ReadStdoutLog read the stdout of given program

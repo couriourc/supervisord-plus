@@ -1,9 +1,8 @@
 module github.com/couriourc/supervisord-plus
 
-go 1.16
+go 1.23.2
 
 require (
-	github.com/UnnoTed/fileb0x v1.1.4 // indirect
 	github.com/couriourc/supervisord-plus/config v0.0.0-00010101000000-000000000000
 	github.com/couriourc/supervisord-plus/events v0.0.0-00010101000000-000000000000
 	github.com/couriourc/supervisord-plus/faults v0.0.0-00010101000000-000000000000
@@ -13,22 +12,36 @@ require (
 	github.com/couriourc/supervisord-plus/types v0.0.0-00010101000000-000000000000
 	github.com/couriourc/supervisord-plus/util v0.0.0-20230902082938-c2cae38b7454
 	github.com/couriourc/supervisord-plus/xmlrpcclient v0.0.0-00010101000000-000000000000
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/rpc v1.2.0
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0
 	github.com/ochinchina/go-daemon v0.1.5
 	github.com/ochinchina/go-ini v1.0.1
 	github.com/ochinchina/go-reaper v0.0.0-20181016012355-6b11389e79fc
 	github.com/ochinchina/gorilla-xmlrpc v0.0.0-20171012055324-ecf2fe693a2c
 	github.com/prometheus/client_golang v1.10.0
-	github.com/prometheus/common v0.23.0 // indirect
 	github.com/rs/cors v1.11.1
 	github.com/sirupsen/logrus v1.8.1
-	golang.org/x/net v0.0.0-20200625001655-4c5254603344 // indirect
+)
+
+require (
+	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/cespare/xxhash/v2 v2.1.1 // indirect
+	github.com/couriourc/supervisord-plus/updater v0.0.0-00010101000000-000000000000 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
+	github.com/kr/binarydist v0.1.0 // indirect
+	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
+	github.com/ochinchina/filechangemonitor v0.3.1 // indirect
+	github.com/prometheus/client_model v0.2.0 // indirect
+	github.com/prometheus/common v0.23.0 // indirect
+	github.com/prometheus/procfs v0.6.0 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
+	github.com/rogpeppe/go-charset v0.0.0-20190617161244-0dc95cdf6f31 // indirect
+	github.com/sanbornm/go-selfupdate v0.0.0-20230714125711-e1c03e3d6ac7 // indirect
 	golang.org/x/sys v0.0.0-20210503080704-8803ae5d1324 // indirect
+	google.golang.org/protobuf v1.26.0 // indirect
 )
 
 replace (
@@ -39,6 +52,7 @@ replace (
 	github.com/couriourc/supervisord-plus/process => ./process
 	github.com/couriourc/supervisord-plus/signals => ./signals
 	github.com/couriourc/supervisord-plus/types => ./types
+	github.com/couriourc/supervisord-plus/updater => ./updater
 	github.com/couriourc/supervisord-plus/util => ./util
 	github.com/couriourc/supervisord-plus/xmlrpcclient => ./xmlrpcclient
 )

@@ -448,6 +448,7 @@ func (s *Supervisor) Reload() (addedGroup []string, changedGroup []string, remov
 	}
 	if err == nil {
 		s.setSupervisordInfo()
+		s.startUpdater()
 		s.startEventListeners()
 		s.createPrograms(prevPrograms)
 		s.startHTTPServer()
@@ -506,7 +507,12 @@ func (s *Supervisor) startEventListeners() {
 		time.Sleep(1 * time.Second)
 	}
 }
-
+func (s *Supervisor) startUpdater() {
+	//updaters := s.config.GetUpdater()
+	//for _, entry := range updaters {
+	//	//updater.SetupSelfUpdater(entry)
+	//}
+}
 func (s *Supervisor) startHTTPServer() {
 	httpServerConfig, ok := s.config.GetInetHTTPServer()
 	s.xmlRPC.Stop()

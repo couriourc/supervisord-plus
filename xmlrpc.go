@@ -107,6 +107,9 @@ func (p *XMLRPC) startHTTPServer(user string, password string, protocol string, 
 	mux.Handle("/RPC2", newHTTPBasicAuth(user, password, p.createRPCServer(s)))
 	progRestHandler := NewSupervisorRestful(s).CreateProgramHandler()
 	mux.Handle("/program/", newHTTPBasicAuth(user, password, progRestHandler))
+	updaterAgentRestHandler := NewSupervisorRestful(s).CreateUpdaterHandler()
+	mux.Handle("/updater/", newHTTPBasicAuth(user, password, updaterAgentRestHandler))
+
 	supervisorRestHandler := NewSupervisorRestful(s).CreateSupervisorHandler()
 	mux.Handle("/supervisor/", newHTTPBasicAuth(user, password, supervisorRestHandler))
 	logtailHandler := NewLogtail(s).CreateHandler()
