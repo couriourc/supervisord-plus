@@ -3,9 +3,9 @@ env:
   - GO111MODULE=on
 before:
   hooks:
-    - go generate ./...
+    - go generate .
     - go mod download
-project_name: supervisord
+project_name: supervisord-plus
 builds:
 - id: static
   env:
