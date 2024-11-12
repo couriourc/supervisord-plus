@@ -1,10 +1,11 @@
+version: 2
 env:
   - GO111MODULE=on
 before:
   hooks:
     - go generate ./...
     - go mod download
-project_name: supervisord
+project_name: supervisord-plus
 builds:
 - id: static
   env:
@@ -20,7 +21,7 @@ builds:
   - CGO_ENABLED=0
   ldflags:
   - "-s -w"
-  binary: supervisord
+  binary: supervisord-plus
   flags:
   - -tags=release
   goos:
@@ -34,31 +35,40 @@ builds:
   goarm:
   - "6"
   - "7"
-  hooks:
-    post: ./upx.sh
-archive:
-  name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
-  format: tar.gz
-  format_overrides:
-    - goos: windows
-      format: zip
-  wrap_in_directory: true
-  files:
-  - none*
-  replacements:
-    amd64: 64-bit
-    arm: ARM
-    arm64: ARM64
-    darwin: macOS
-    linux: Linux
-    windows: Windows
-    openbsd: OpenBSD
-    netbsd: NetBSD
-    freebsd: FreeBSD
+  # hooks:
+    # post:
+      # - chmod +X upx.sh
+      # - sh ./upx.sh
+
+archives:
+  - id: static
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    allow_different_binary_count: true
+# archives:
+#   name_template: 
+#     - "
+#   format: tar.gz
+#   format_overrides:
+#     - goos: windows
+#       format: zip
+#   wrap_in_directory: true
+#   files:
+#     - none*
+#   replacements:
+#     amd64: 64-bit
+#     arm: ARM
+#     arm64: ARM64
+#     darwin: macOS
+#     linux: Linux
+#     windows: Windows
+#     openbsd: OpenBSD
+#     netbsd: NetBSD
+#     freebsd: FreeBSD
+
 release:
   github:
-    owner: ochinchina
-    name: supervisord
+    owner: couriourc
+    name: supervisord-plus
   draft: false
   prerelease: auto
   name_template: "{{.ProjectName}}-v{{.Version}}-{{.ShortCommit}}"

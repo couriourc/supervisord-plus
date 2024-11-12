@@ -3,6 +3,7 @@ module github.com/couriourc/supervisord-plus
 go 1.16
 
 require (
+	github.com/UnnoTed/fileb0x v1.1.4 // indirect
 	github.com/couriourc/supervisord-plus/config v0.0.0-00010101000000-000000000000
 	github.com/couriourc/supervisord-plus/events v0.0.0-00010101000000-000000000000
 	github.com/couriourc/supervisord-plus/faults v0.0.0-00010101000000-000000000000
@@ -26,6 +27,7 @@ require (
 	github.com/prometheus/common v0.23.0 // indirect
 	github.com/rs/cors v1.11.1
 	github.com/sirupsen/logrus v1.8.1
+	golang.org/x/net v0.0.0-20200625001655-4c5254603344 // indirect
 	golang.org/x/sys v0.0.0-20210503080704-8803ae5d1324 // indirect
 )
 
