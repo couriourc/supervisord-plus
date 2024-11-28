@@ -6,7 +6,6 @@ import (
 	"github.com/expr-lang/expr"
 	"html/template"
 	"os"
-	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -96,7 +95,6 @@ func (se *StringExpression) Eval(s string) (string, error) {
 			} else {
 				return "", fmt.Errorf("not implement type:%v", s[typ])
 			}
-			fmt.Println(filepath.Join(s, ""))
 		} else {
 			return "", fmt.Errorf("invalid string expression format")
 		}
