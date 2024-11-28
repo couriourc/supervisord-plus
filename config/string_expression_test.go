@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"testing"
 )
@@ -10,9 +11,9 @@ func TestEval(t *testing.T) {
 
 	se.Add("var1", "ok").Add("var2", "2")
 
-	r, _ := se.Eval("%(var1)s_test_%(var2)02d")
-
-	if r != "ok_test_02" {
+	r, _ := se.Eval("%(var1)s_test_%(var2+1)d")
+	fmt.Println(r)
+	if r != "ok_test_302" {
 		t.Error("fail to replace the environment")
 	}
 }

@@ -281,6 +281,9 @@ func (p *Process) GetPid() int {
 	}
 	return p.cmd.Process.Pid
 }
+func (p *Process) GetArgs() []string {
+	return p.args
+}
 
 // GetState Get the process state
 func (p *Process) GetState() State {

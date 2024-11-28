@@ -15,11 +15,14 @@ type SelfUpdaterAgent struct {
 var lock = &sync.RWMutex{}
 
 // go-selfupdate setup and config
-var updaters = make([]*SelfUpdaterAgent, 0)
+var updaters = make(map[string]*SelfUpdaterAgent, 0)
 var signal = make(chan rxgo.Item)
 
 func TriggerUpdater(agentName string) {
 	signal <- rxgo.Of(agentName)
+}
+func TriggerUpdaterBySelfConfig(updaterInfo *UpdateAgentInfo) {
+	signal <- rxgo.Of(updaterInfo)
 }
 func (agent *SelfUpdaterAgent) GetAgentName() string {
 	return agent.AgentName
@@ -50,12 +53,29 @@ func SetupSelfUpdater(agent *SelfUpdaterAgent) {
 			switch item.V.(type) {
 			case string:
 				if item.V != agent.AgentName {
-					break
+					continue
 				}
 				go func() {
 					err := agent.Updater.BackgroundRun()
 					if err != nil {
 						fmt.Println(err)
+						return
+					}
+				}()
+			case UpdateAgentInfo:
+				newUpdaterInfo := item.V.(UpdateAgentInfo)
+				agent.Updater.CurrentVersion = newUpdaterInfo.CurrentVersion
+				agent.Updater.ApiURL = newUpdaterInfo.ApiURL
+				agent.Updater.BinURL = newUpdaterInfo.BinURL
+				agent.Updater.DiffURL = newUpdaterInfo.DiffURL
+				agent.Updater.Dir = newUpdaterInfo.Dir
+				agent.Updater.CmdName = newUpdaterInfo.CmdName
+				agent.Updater.ForceCheck = newUpdaterInfo.ForceCheck
+				go func() {
+					err := agent.Updater.BackgroundRun()
+					if err != nil {
+						fmt.Println(err)
+						return
 					}
 				}()
 			}
@@ -63,7 +83,11 @@ func SetupSelfUpdater(agent *SelfUpdaterAgent) {
 	}()
 }
 func NewUpdater(cfg map[string]string) {
+	if len(cfg["agent_name"]) == 0 {
+		return
+	}
 	lock.Lock()
+
 	update := &SelfUpdaterAgent{
 		Updater: &selfupdate.Updater{
 			CurrentVersion: cfg["version"],               // Manually update the const, or set it using `go build -ldflags="-X main.VERSION=<newver>" -o hello-updater src/hello-updater/main.go`
@@ -76,7 +100,7 @@ func NewUpdater(cfg map[string]string) {
 		},
 		AgentName: cfg["agent_name"],
 	}
-	updaters = append(updaters, update)
+	updaters[cfg["agent_name"]] = update
 	go SetupSelfUpdater(update)
 	lock.Unlock()
 }

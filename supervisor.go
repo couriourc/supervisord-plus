@@ -208,7 +208,9 @@ func getProcessInfo(proc *process.Process) *types.ProcessInfo {
 		Logfile:       proc.GetStdoutLogfile(),
 		StdoutLogfile: proc.GetStdoutLogfile(),
 		StderrLogfile: proc.GetStderrLogfile(),
-		Pid:           proc.GetPid()}
+		Pid:           proc.GetPid(),
+		Arg:           proc.GetArgs(),
+	}
 
 }
 

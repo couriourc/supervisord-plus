@@ -1,8 +1,13 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/expr-lang/expr"
+	"html/template"
 	"os"
+	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -42,6 +47,7 @@ func (se *StringExpression) Add(key string, value string) *StringExpression {
 
 // Eval evaluate the expression include "%(var)s"  and return the string after replacing the var
 func (se *StringExpression) Eval(s string) (string, error) {
+
 	for {
 		// find variable start indicator
 		start := strings.Index(s, "%(")
@@ -68,25 +74,110 @@ func (se *StringExpression) Eval(s string) (string, error) {
 		if typ < n {
 			varName := s[start+2 : end]
 
-			varValue, ok := se.env[varName]
-
-			if !ok {
-				return "", fmt.Errorf("fail to find the environment variable %s", varName)
-			}
 			if s[typ] == 'd' {
-				i, err := strconv.Atoi(varValue)
-				if err != nil {
-					return "", fmt.Errorf("can't convert %s to integer", varValue)
+				for k, v := range se.env {
+					varName = strings.Replace(varName, k, v, -1)
 				}
-				s = s[0:start] + fmt.Sprintf("%"+s[end+1:typ+1], i) + s[typ+1:]
+				program, err := expr.Compile(varName, expr.Env(se.env))
+				if err != nil {
+					return "", fmt.Errorf("fail to find the environment variable %s", varName)
+				}
+				varValue, err := expr.Run(program, se.env)
+				//进行计算
+				s = s[0:start] + fmt.Sprintf("%d", varValue) + s[typ+1:]
 			} else if s[typ] == 's' {
-				s = s[0:start] + varValue + s[typ+1:]
+				program, err := expr.Compile(varName, expr.Env(se.env))
+				if err != nil {
+					return "", fmt.Errorf("fail to find the environment variable %s", varName)
+				}
+				varValue, err := expr.Run(program, se.env)
+				result, _ := ToStringE(varValue)
+				s = s[0:start] + result + s[typ+1:]
 			} else {
 				return "", fmt.Errorf("not implement type:%v", s[typ])
 			}
+			fmt.Println(filepath.Join(s, ""))
 		} else {
 			return "", fmt.Errorf("invalid string expression format")
 		}
 	}
 
+}
+
+var (
+	errorType       = reflect.TypeOf((*error)(nil)).Elem()
+	fmtStringerType = reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
+)
+
+// Copied from html/template/content.go.
+// indirectToStringerOrError returns the value, after dereferencing as many times
+// as necessary to reach the base type (or nil) or an implementation of fmt.Stringer
+// or error,
+func indirectToStringerOrError(a any) any {
+	if a == nil {
+		return nil
+	}
+	v := reflect.ValueOf(a)
+	for !v.Type().Implements(fmtStringerType) && !v.Type().Implements(errorType) && v.Kind() == reflect.Pointer && !v.IsNil() {
+		v = v.Elem()
+	}
+	return v.Interface()
+}
+
+// ToStringE converts any type to a string type.
+func ToStringE(i any) (string, error) {
+	i = indirectToStringerOrError(i)
+
+	switch s := i.(type) {
+	case string:
+		return s, nil
+	case bool:
+		return strconv.FormatBool(s), nil
+	case float64:
+		return strconv.FormatFloat(s, 'f', -1, 64), nil
+	case float32:
+		return strconv.FormatFloat(float64(s), 'f', -1, 32), nil
+	case int:
+		return strconv.Itoa(s), nil
+	case int64:
+		return strconv.FormatInt(s, 10), nil
+	case int32:
+		return strconv.Itoa(int(s)), nil
+	case int16:
+		return strconv.FormatInt(int64(s), 10), nil
+	case int8:
+		return strconv.FormatInt(int64(s), 10), nil
+	case uint:
+		return strconv.FormatUint(uint64(s), 10), nil
+	case uint64:
+		return strconv.FormatUint(uint64(s), 10), nil
+	case uint32:
+		return strconv.FormatUint(uint64(s), 10), nil
+	case uint16:
+		return strconv.FormatUint(uint64(s), 10), nil
+	case uint8:
+		return strconv.FormatUint(uint64(s), 10), nil
+	case json.Number:
+		return s.String(), nil
+	case []byte:
+		return string(s), nil
+	case template.HTML:
+		return string(s), nil
+	case template.URL:
+		return string(s), nil
+	case template.JS:
+		return string(s), nil
+	case template.CSS:
+		return string(s), nil
+	case template.HTMLAttr:
+		return string(s), nil
+	case nil:
+		return "", nil
+	case fmt.Stringer:
+		return s.String(), nil
+	case error:
+		return s.Error(), nil
+	default:
+		return "", fmt.Errorf("unable to cast %#v of type %T to string", i, i)
+	}
 }
