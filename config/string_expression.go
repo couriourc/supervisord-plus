@@ -95,6 +95,7 @@ func (se *StringExpression) Eval(s string) (string, error) {
 			} else {
 				return "", fmt.Errorf("not implement type:%v", s[typ])
 			}
+			fmt.Println(s)
 		} else {
 			return "", fmt.Errorf("invalid string expression format")
 		}
