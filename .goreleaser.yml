@@ -35,30 +35,30 @@ builds:
     goarm:
       - "6"
       - "7"
-        # hooks:
-        # post:
-        # - chmod +X upx.sh
+      # hooks:
+      # post:
+      # - chmod +X upx.sh
       # - sh ./upx.sh
 
 archives:
   - id: static
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     allow_different_binary_count: true
+    format: tar.gz
+    wrap_in_directory: true
+    files:
+      - none*
+    format_overrides:
+      - goos: windows
+        format: zip
 # archives:
 #   name_template:
 #     - "
-#   format: tar.gz
-#   format_overrides:
-#     - goos: windows
-#       format: zip
-#   wrap_in_directory: true
-#   files:
-#     - none*
 
 release:
   github:
     owner: couriourc
     name: supervisord-plus
-  draft: false
-  prerelease: true
+  draft: true
+  prerelease: auto
   name_template: "{{.ProjectName}}-v{{.Version}}-{{.ShortCommit}}"
