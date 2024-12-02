@@ -2,6 +2,7 @@ package process
 
 import (
 	"fmt"
+	"github.com/couriourc/supervisord-plus/util"
 	"io"
 	"os"
 	"os/exec"
@@ -122,38 +123,19 @@ func NewProcess(supervisorID string, config *config.Entry) *Process {
 // add this process to crontab
 func (p *Process) addToCron() {
 	s := p.config.GetString("cron", "")
-
-	if s != "" {
-		log.WithFields(log.Fields{"program": p.GetName()}).Info("try to create cron program with cron expression:", s)
-		scheduler.AddFunc(s, func() {
-			log.WithFields(log.Fields{"program": p.GetName()}).Info("start cron program")
-			if !p.isRunning() {
-				p.Start(false)
-			}
-		})
+	if s == "" {
+		return
 	}
+	// add cron
+	log.WithFields(log.Fields{"program": p.GetName()}).Info("try to create cron program with cron expression:", s)
+	scheduler.AddFunc(s, func() {
+		log.WithFields(log.Fields{"program": p.GetName()}).Info("start cron program")
+		p.Start(false)
+	})
 
-}
-func RemoveRepeatedElement(arr []string) (newArr []string) {
-	newArr = make([]string, 0)
-	for i := 0; i < len(arr); i++ {
-		repeat := false
-		for j := i + 1; j < len(arr); j++ {
-			if arr[i] == arr[j] {
-				repeat = true
-				break
-			}
-		}
-		if !repeat {
-			newArr = append(newArr, arr[i])
-		}
-	}
-	return
 }
 func (p *Process) SetupArgs(args string) {
-	//p.cmd.Args = make([]string, 0)
-	//p.cmd.Args = append(p.cmd.Args, args)
-	p.args = RemoveRepeatedElement(append(p.args, args))
+	p.args = util.RemoveRepeatedElement(append(p.args, args))
 }
 
 // Start start the process
@@ -434,11 +416,11 @@ func (p *Process) isRunning() bool {
 // create Command object for the program
 func (p *Process) createProgramCommand() error {
 	args, err := parseCommand(p.config.GetStringExpression("command", ""))
-
 	if err != nil {
 		return err
 	}
-	p.cmd, err = createCommand(RemoveRepeatedElement(append(args, p.args...)))
+	p.cmd, err = createCommand(util.RemoveRepeatedElement(append(args, p.args...)))
+	//
 	p.args = make([]string, 0)
 	if err != nil {
 		return err

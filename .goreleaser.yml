@@ -7,37 +7,37 @@ before:
     - go mod download
 project_name: supervisord-plus
 builds:
-- id: static
-  env:
-  - CGO_ENABLED=1
-  binary: supervisord_static
-  goos:
-  - linux
-  goarch:
-  - amd64
-  ldflags:
-  - "-linkmode external -extldflags -static"
-- env:
-  - CGO_ENABLED=0
-  ldflags:
-  - "-s -w"
-  binary: supervisord-plus
-  flags:
-  - -tags=release
-  goos:
-  - windows
-  - darwin
-  - linux
-  goarch:
-  - amd64
-  - arm
-  - arm64
-  goarm:
-  - "6"
-  - "7"
-  # hooks:
-    # post:
-      # - chmod +X upx.sh
+  - id: static
+    env:
+      - CGO_ENABLED=1
+    binary: supervisord_static
+    goos:
+      - linux
+    goarch:
+      - amd64
+    ldflags:
+      - "-linkmode external -extldflags -static"
+  - env:
+      - CGO_ENABLED=0
+    ldflags:
+      - "-s -w"
+    binary: supervisord-plus
+    flags:
+      - -tags=release
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - "6"
+      - "7"
+        # hooks:
+        # post:
+        # - chmod +X upx.sh
       # - sh ./upx.sh
 
 archives:
@@ -45,7 +45,7 @@ archives:
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     allow_different_binary_count: true
 # archives:
-#   name_template: 
+#   name_template:
 #     - "
 #   format: tar.gz
 #   format_overrides:
@@ -54,16 +54,6 @@ archives:
 #   wrap_in_directory: true
 #   files:
 #     - none*
-#   replacements:
-#     amd64: 64-bit
-#     arm: ARM
-#     arm64: ARM64
-#     darwin: macOS
-#     linux: Linux
-#     windows: Windows
-#     openbsd: OpenBSD
-#     netbsd: NetBSD
-#     freebsd: FreeBSD
 
 release:
   github:

@@ -6,4 +6,12 @@ use (
 	.
 	config
 	updater
+	events
+	faults
+	logger
+	process
+	signals
+	types
+	util
+	xmlrpcclient
 )
