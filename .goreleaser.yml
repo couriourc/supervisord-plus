@@ -60,5 +60,5 @@ release:
     owner: couriourc
     name: supervisord-plus
   draft: false
-  prerelease: auto
+  prerelease: true
   name_template: "{{.ProjectName}}-v{{.Version}}-{{.ShortCommit}}"
